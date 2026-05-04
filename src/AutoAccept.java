@@ -22,6 +22,11 @@ public class AutoAccept {
     private static final float SAT_MIN = 0.40f;
     private static final float BRI_MIN = 0.40f;
 
+    // Accept screen dims the whole screen with a dark overlay.
+    // Corner brightness: normal menu ≈0.24, accept screen ≈0.04.
+    // Only proceed with detection if corners are dark (overlay is up).
+    private static final float OVERLAY_BRIGHTNESS_THRESHOLD = 0.10f;
+
     public static void main(String[] args) throws Exception {
         Robot robot = new Robot();
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -44,7 +49,28 @@ public class AutoAccept {
         }
     }
 
+    static boolean isOverlayActive(BufferedImage img) {
+        int w = img.getWidth(), h = img.getHeight();
+        int[][] corners = {{50, 50}, {w - 50, 50}, {50, h - 50}, {w - 50, h - 50}};
+        float total = 0;
+        int count = 0;
+        for (int[] c : corners) {
+            for (int dy = -20; dy <= 20; dy += 5) {
+                for (int dx = -20; dx <= 20; dx += 5) {
+                    float[] hsb = new float[3];
+                    int rgb = img.getRGB(c[0] + dx, c[1] + dy);
+                    Color.RGBtoHSB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, hsb);
+                    total += hsb[2];
+                    count++;
+                }
+            }
+        }
+        return (total / count) < OVERLAY_BRIGHTNESS_THRESHOLD;
+    }
+
     static Point findAcceptButton(BufferedImage img) {
+        if (!isOverlayActive(img)) return null;
+
         int w = img.getWidth(), h = img.getHeight();
 
         // Only scan the center of the screen — the accept button never appears at edges
