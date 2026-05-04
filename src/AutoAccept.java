@@ -15,12 +15,12 @@ public class AutoAccept {
     private static final int MIN_BUTTON_WIDTH = 100;
     private static final int MIN_BUTTON_HEIGHT = 30;
 
-    // HSB thresholds calibrated from actual Dota 2 accept screen pixels
-    // Button green: H≈0.37, S≈0.46–0.51, V≈0.54–0.60
+    // HSB thresholds calibrated from two real accept screen captures
+    // Screenshot 1: H≈0.37–0.39  Screenshot 2: H≈0.42–0.424 — extend max to cover both
     private static final float HUE_MIN = 0.28f;
-    private static final float HUE_MAX = 0.42f;
+    private static final float HUE_MAX = 0.46f;
     private static final float SAT_MIN = 0.40f;
-    private static final float BRI_MIN = 0.40f;
+    private static final float BRI_MIN = 0.38f;
 
     // Accept screen dims the whole screen with a dark overlay.
     // Corner brightness: normal menu ≈0.24, accept screen ≈0.04.
