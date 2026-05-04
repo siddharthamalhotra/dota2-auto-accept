@@ -8,13 +8,17 @@ public class AutoAccept {
     private static final int CLICK_COOLDOWN_MS = 3000;
 
     // Minimum sampled green pixels (screen is sampled every 4px) to confirm button
-    private static final int MIN_GREEN_PIXELS = 200;
+    private static final int MIN_GREEN_PIXELS = 1500;
 
-    // HSB thresholds for Dota 2's accept button green
-    private static final float HUE_MIN = 0.25f;
-    private static final float HUE_MAX = 0.42f;
-    private static final float SAT_MIN = 0.40f;
-    private static final float BRI_MIN = 0.30f;
+    // The accept button bounding box must be at least this wide/tall (in real pixels)
+    private static final int MIN_BUTTON_WIDTH = 150;
+    private static final int MIN_BUTTON_HEIGHT = 40;
+
+    // HSB thresholds — tightened to avoid matching small green UI dots
+    private static final float HUE_MIN = 0.28f;
+    private static final float HUE_MAX = 0.40f;
+    private static final float SAT_MIN = 0.55f;
+    private static final float BRI_MIN = 0.35f;
 
     public static void main(String[] args) throws Exception {
         Robot robot = new Robot();
@@ -62,7 +66,10 @@ public class AutoAccept {
             }
         }
 
-        if (count >= MIN_GREEN_PIXELS) {
+        int buttonW = maxX - minX;
+        int buttonH = maxY - minY;
+
+        if (count >= MIN_GREEN_PIXELS && buttonW >= MIN_BUTTON_WIDTH && buttonH >= MIN_BUTTON_HEIGHT) {
             return new Point((minX + maxX) / 2, (minY + maxY) / 2);
         }
         return null;
